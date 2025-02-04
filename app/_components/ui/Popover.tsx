@@ -63,7 +63,7 @@ const Popover = ({
         onClick={togglePopover}
         className={clsx(
           buttonClassName,
-          isVisible ? " bg-neutral-200 rounded-t-lg w-full" : ""
+          isVisible ? " bg-neutral-200 rounded-t-lg" : ""
         )}
       >
         {icon}
