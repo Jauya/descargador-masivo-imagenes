@@ -71,7 +71,7 @@ export default function ImageCard({ value }: ImageCardProps) {
           <DownloadButton idResource={value.id} />
           <div className="flex flex-col-reverse justify-between items-center bg-white hover:bg-gray-50 rounded-lg text-black relative">
             <button
-              className="p-2 pt-1 disabled:bg-neutral-300 disabled:text-neutral-800 rounded-b-lg"
+              className="w-full p-2 pt-1 disabled:bg-neutral-300 disabled:text-neutral-800/70 rounded-b-lg"
               disabled={!folders.some((folder) => folder.selectedForSaving)}
               onClick={() => addSelectedImage(value)}
             >

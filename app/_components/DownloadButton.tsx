@@ -37,7 +37,6 @@ export default function DownloadButton({ idResource }: DownloadButtonProps) {
     }
   };
   return (
-    <>
       <button
         onClick={handleSubmit}
         className="p-2 bg-white border rounded-lg text-black disabled:bg-neutral-200 disabled:text-black/70"
@@ -45,6 +44,5 @@ export default function DownloadButton({ idResource }: DownloadButtonProps) {
       >
         <ArrowDownTrayIcon className="size-5 w-full " />
       </button>
-    </>
   );
 }
