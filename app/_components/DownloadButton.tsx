@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowDownTrayIcon } from "@heroicons/react/16/solid";
-import { downloadResource } from "../actions";
+import { downloadResource, getBlobImage } from "../actions";
 import { useApikeyStore } from "../_store/apikeyStore";
 import Tostify from "toastify-js";
 interface DownloadButtonProps {
@@ -16,9 +16,8 @@ export default function DownloadButton({ idResource }: DownloadButtonProps) {
       dataDownload.data?.url &&
       dataDownload.data?.filename
     ) {
-      const response = await fetch(dataDownload.data?.url);
+      const blob = await getBlobImage(dataDownload.data?.url);
 
-      const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);
 
       const a = document.createElement("a");

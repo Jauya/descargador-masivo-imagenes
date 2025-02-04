@@ -55,3 +55,8 @@ export const downloadResource = async (id: number, apikey: string) => {
     return { message: "Error del servidor" };
   }
 };
+
+export const getBlobImage = async (url: string) => {
+  const res = await fetch(url);
+  return res.blob();
+};

@@ -1,5 +1,5 @@
 "use client";
-import { downloadResource } from "../actions";
+import { getBlobImage, downloadResource } from "../actions";
 import { useApikeyStore } from "../_store/apikeyStore";
 import { ReactNode, useState } from "react";
 import * as zip from "@zip.js/zip.js"; // Importa zip.js
@@ -33,8 +33,8 @@ export default function DownloadFolderButton({
         const dataDownload = await downloadResource(idResource, apikey);
 
         if (dataDownload.data?.url && dataDownload.data?.filename) {
-          const response = await fetch(dataDownload.data.url);
-          if (!response.ok) {
+          const blob = await getBlobImage(dataDownload.data.url);
+          if (!blob) {
             console.error(`Error al descargar el recurso ${idResource}`);
             continue;
           }
@@ -42,7 +42,6 @@ export default function DownloadFolderButton({
           downloadedCount++; // Actualiza la variable local
           setDownloaded(downloadedCount); // Actualiza el estado para la UI
 
-          const blob = await response.blob();
           await writer.add(
             dataDownload.data.filename,
             new zip.BlobReader(blob)
