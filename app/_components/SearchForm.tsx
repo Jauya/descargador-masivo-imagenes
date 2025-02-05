@@ -2,16 +2,21 @@
 import { useFormik } from "formik";
 import { useFreepikStore } from "../_store/freepikStore";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function SearchForm() {
-  const { setTerm, term } = useFreepikStore();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const initialTerm = searchParams.get("term") || "";
+
+  const { term } = useFreepikStore();
   const { values, handleSubmit, handleChange, resetForm } = useFormik({
     initialValues: {
-      term,
+      term: initialTerm,
     },
     onSubmit: (values) => {
       if (values.term.trim() !== term) {
-        setTerm(values.term);
+        router.replace(`?term=${values.term}&page=1`, { scroll: false });
       }
     },
   });

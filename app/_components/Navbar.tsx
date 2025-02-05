@@ -4,11 +4,7 @@ import SearchForm from "./SearchForm";
 import Link from "next/link";
 import { ExclamationCircleIcon, FolderIcon } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
-import {
-  CodeBracketIcon,
-  MagnifyingGlassIcon,
-} from "@heroicons/react/16/solid";
-import clsx from "clsx";
+import { CodeBracketIcon } from "@heroicons/react/16/solid";
 import Modal from "./ui/Modal";
 import { useState } from "react";
 import { useFormik } from "formik";
@@ -16,12 +12,13 @@ import { validateKey } from "../actions";
 import { useApikeyStore } from "../_store/apikeyStore";
 import { CheckCircleIcon } from "@heroicons/react/24/outline";
 import { delay } from "../utils";
+import { useFreepikStore } from "../_store/freepikStore";
 
 export default function Navbar() {
   const pathname = usePathname();
-  const condition: boolean = pathname == "/folders";
 
   const { apikey: apiKey, setApikey } = useApikeyStore();
+  const { term, page, lastSearch, setLastSearch } = useFreepikStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
@@ -59,14 +56,16 @@ export default function Navbar() {
   return (
     <div className="z-20 sticky top-0 flex flex-col gap-2 px-5 py-3 bg-white border-b">
       <div className="flex justify-between items-center">
-        <Image
-          className="contrast-150 aspect-auto w-auto h-auto"
-          src="/freepik.svg"
-          alt="freepik logo"
-          width={160}
-          height={44}
-          priority
-        />
+        <Link href={lastSearch}>
+          <Image
+            className="contrast-150 aspect-auto w-auto h-auto"
+            src="/freepik.svg"
+            alt="freepik logo"
+            width={160}
+            height={44}
+            priority
+          />
+        </Link>
         <div className="flex justify-center items-center gap-2">
           {apiKey ? (
             <CheckCircleIcon className="size-5 text-green-600" />
@@ -131,20 +130,11 @@ export default function Navbar() {
             </form>
           </Modal>
           <Link
-            className={clsx(
-              "flex gap-2 items-center border rounded-lg px-4 py-2 text-neutral-700",
-              !condition && "hidden"
-            )}
-            href="/"
-          >
-            <MagnifyingGlassIcon className="size-6" />
-            Busqueda
-          </Link>
-          <Link
-            className={clsx(
-              "flex gap-2 items-center border rounded-lg px-4 py-2 text-neutral-700",
-              condition && "hidden"
-            )}
+            className="flex gap-2 items-center border rounded-lg px-4 py-2 text-neutral-700"
+            onClick={() =>
+              pathname !== "/folders" &&
+              setLastSearch(`/?term=${term}&page=${page}`)
+            }
             href="/folders"
           >
             <FolderIcon className="size-6" />

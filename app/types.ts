@@ -1,6 +1,7 @@
 export interface FreepikResources {
-  data: DataImage[];
-  meta: Meta2;
+  data?: DataImage[];
+  meta?: Meta2;
+  message?:string
 }
 
 export interface DataImage {

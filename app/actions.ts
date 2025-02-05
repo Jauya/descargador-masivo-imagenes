@@ -1,25 +1,25 @@
 "use server";
 
-import { DataImage, FreepikDownload, FreepikResources } from "./types";
+import { FreepikDownload, FreepikResources } from "./types";
 
 const url = "https://api.freepik.com/v1/resources";
 export const getAllResources = async (
   term: string,
-  apikey: string
-): Promise<DataImage[]> => {
+  apikey: string,
+  page: number
+) => {
   try {
-    const queryParams = `limit=50&filters[content_type][photo]=1&filters[license][freemium]=1&term=${term}`;
+    const queryParams = `page=${page}&limit=50&filters[content_type][photo]=1&filters[license][freemium]=1&term=${term}`;
     const res = await fetch(`${url}?${queryParams}`, {
       headers: {
         "x-freepik-api-key": apikey,
       },
     });
     const result: FreepikResources = await res.json();
-    return result.data;
+    return result;
   } catch (error) {
     console.log(error);
-    const data: DataImage[] = [];
-    return data;
+    return { message: "Error del servidor" };
   }
 };
 
@@ -31,8 +31,7 @@ export const validateKey = async (apikey: string) => {
       },
     });
     const result: FreepikResources = await res.json();
-    console.log(result);
-    if (result.data.length !== 1) {
+    if (result.data && result.data.length !== 1) {
       return false;
     }
     return true;

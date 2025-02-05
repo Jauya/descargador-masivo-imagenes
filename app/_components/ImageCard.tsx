@@ -51,9 +51,9 @@ export default function ImageCard({ value }: ImageCardProps) {
         className="object-cover w-full rounded-lg"
       />
       <div className="flex gap-2 p-2 justify-between items-end transition duration-300 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none absolute top-0 rounded-lg w-full h-full bg-gradient-to-b to-black/50 from-black/0 opacity-0 text-white">
-        <h2 className="w-full max-w-56 overflow-hidden overflow-ellipsis text-nowrap">
+        <h3 className="w-full max-w-56 overflow-hidden overflow-ellipsis text-nowrap">
           {value.title}
-        </h2>
+        </h3>
         <div className="flex flex-col gap-1">
           {folders.some((folder) =>
             folder.selectedImages.some(
