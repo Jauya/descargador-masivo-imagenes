@@ -3,23 +3,29 @@ import { useFormik } from "formik";
 import { useFreepikStore } from "../_store/freepikStore";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function SearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const initialTerm = searchParams.get("term") || "";
+  const [searchTerm, setSearchTerm] = useState(searchParams.get("term") || "");
 
   const { term } = useFreepikStore();
+
+  useEffect(() => {
+    setSearchTerm(searchParams.get("term") || "");
+  }, [searchParams]); // Se ejecuta cada vez que cambia la URL
+
   const { values, handleSubmit, handleChange, resetForm } = useFormik({
-    initialValues: {
-      term: initialTerm,
-    },
+    initialValues: { term: searchTerm },
+    enableReinitialize: true, // Permite que los valores iniciales cambien dinámicamente
     onSubmit: (values) => {
       if (values.term.trim() !== term) {
         router.replace(`?term=${values.term}&page=1`, { scroll: false });
       }
     },
   });
+
   return (
     <form
       onSubmit={handleSubmit}
