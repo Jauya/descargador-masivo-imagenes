@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useFreepikStore } from "../_store/freepikStore";
 import { FreepikResources } from "../types";
 import { getAllResources } from "../actions";
@@ -71,296 +71,294 @@ export default function ImageGallery() {
   });
 
   return (
-    <Suspense>
-      <div className="py-2 flex justify-center w-full">
-        {apikey ? (
-          <div className="flex flex-col gap-2 w-full text-neutral-700">
-            <h2 className="text-xl">
-              Mostrando resultados{" "}
-              {term && <strong className="text-black">{term}</strong>}
-            </h2>
-            <div className="flex justify-between items-center py-3">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex items-center gap-1">
-                  <PhotoIcon className="size-4" />
-                  <strong>Imágenes</strong>
-                </div>
-                {result.meta?.total}
+    <div className="py-2 flex justify-center w-full">
+      {apikey ? (
+        <div className="flex flex-col gap-2 w-full text-neutral-700">
+          <h2 className="text-xl">
+            Mostrando resultados{" "}
+            {term && <strong className="text-black">{term}</strong>}
+          </h2>
+          <div className="flex justify-between items-center py-3">
+            <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-1">
+                <PhotoIcon className="size-4" />
+                <strong>Imágenes</strong>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == 1}
-                  onClick={() => {
-                    setFieldValue("page", 1);
-                    router.replace(`?term=${term}&page=1`, { scroll: false });
-                  }}
-                >
-                  <ChevronDoubleLeftIcon className="size-5" />
-                </button>
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == 1}
-                  onClick={() => {
-                    setFieldValue("page", page - 1);
-                    router.replace(`?term=${term}&page=${page - 1}`, {
-                      scroll: false,
-                    });
-                  }}
-                >
-                  <ChevronLeftIcon className="size-5" />
-                </button>
-                {lastPage == page && page - 2 > 0 && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page - 2);
-                        router.replace(`?term=${term}&page=${page - 2}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page - 2}
-                    </button>
-                  </>
-                )}
-                {page > 1 && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page - 1);
-                        router.replace(`?term=${term}&page=${page - 1}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page - 1}
-                    </button>
-                  </>
-                )}
-
-                <button className="flex justify-center items-center rounded-full bg-neutral-300 size-9 text-sm font-medium">
-                  {page}
-                </button>
-                {lastPage - 1 >= page && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page + 1);
-                        router.replace(`?term=${term}&page=${page + 1}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page + 1}
-                    </button>
-                  </>
-                )}
-                {page == 1 && page + 2 <= lastPage && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page + 2);
-                        router.replace(`?term=${term}&page=${page + 2}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page + 2}
-                    </button>
-                  </>
-                )}
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == lastPage}
-                  onClick={() => {
-                    setFieldValue("page", page + 1);
-                    router.replace(`?term=${term}&page=${page + 1}`, {
-                      scroll: false,
-                    });
-                  }}
-                >
-                  <ChevronRightIcon className="size-5" />
-                </button>
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == lastPage}
-                  onClick={() => {
-                    setFieldValue("page", lastPage);
-                    router.replace(`?term=${term}&page=${lastPage}`);
-                  }}
-                >
-                  <ChevronDoubleRightIcon className="size-5" />
-                </button>
-              </div>
-              <form
-                onSubmit={handleSubmit}
-                className="flex gap-1 items-center text-sm font-medium text-neutral-500"
-              >
-                Página
-                <input
-                  className="w-[60px] outline-none border rounded-lg pl-3 p-1"
-                  name="page"
-                  onChange={handleChange}
-                  value={values.page}
-                  type="number"
-                  min={1}
-                  max={lastPage}
-                />
-                de {lastPage || 1}
-              </form>
+              {result.meta?.total}
             </div>
-
-            <ul className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-3">
-              {result.data?.map((value) => (
-                <ImageCard value={value} key={value.id} />
-              ))}
-            </ul>
-
-            <div className="flex justify-between items-center py-3">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex items-center gap-1">
-                  <PhotoIcon className="size-4" />
-                  <strong>Imágenes</strong>
-                </div>
-                {result.meta?.total}
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == 1}
-                  onClick={() => {
-                    setFieldValue("page", 1);
-                    router.replace(`?term=${term}&page=1`, { scroll: false });
-                  }}
-                >
-                  <ChevronDoubleLeftIcon className="size-5" />
-                </button>
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == 1}
-                  onClick={() => {
-                    setFieldValue("page", page - 1);
-                    router.replace(`?term=${term}&page=${page - 1}`, {
-                      scroll: false,
-                    });
-                  }}
-                >
-                  <ChevronLeftIcon className="size-5" />
-                </button>
-                {lastPage == page && page - 2 > 0 && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page - 2);
-                        router.replace(`?term=${term}&page=${page - 2}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page - 2}
-                    </button>
-                  </>
-                )}
-                {page > 1 && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page - 1);
-                        router.replace(`?term=${term}&page=${page - 1}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page - 1}
-                    </button>
-                  </>
-                )}
-
-                <button className="flex justify-center items-center rounded-full bg-neutral-300 size-9 text-sm font-medium">
-                  {page}
-                </button>
-                {lastPage - 1 >= page && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page + 1);
-                        router.replace(`?term=${term}&page=${page + 1}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page + 1}
-                    </button>
-                  </>
-                )}
-                {page == 1 && page + 2 <= lastPage && (
-                  <>
-                    <button
-                      className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                      onClick={() => {
-                        setFieldValue("page", page + 2);
-                        router.replace(`?term=${term}&page=${page + 2}`, {
-                          scroll: false,
-                        });
-                      }}
-                    >
-                      {page + 2}
-                    </button>
-                  </>
-                )}
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == lastPage}
-                  onClick={() => {
-                    setFieldValue("page", page + 1);
-                    router.replace(`?term=${term}&page=${page + 1}`, {
-                      scroll: false,
-                    });
-                  }}
-                >
-                  <ChevronRightIcon className="size-5" />
-                </button>
-                <button
-                  className="disabled:opacity-70"
-                  disabled={page == lastPage}
-                  onClick={() => {
-                    setFieldValue("page", lastPage);
-                    router.replace(`?term=${term}&page=${lastPage}`);
-                  }}
-                >
-                  <ChevronDoubleRightIcon className="size-5" />
-                </button>
-              </div>
-              <form
-                onSubmit={handleSubmit}
-                className="flex gap-1 items-center text-sm font-medium text-neutral-500"
+            <div className="flex items-center gap-2">
+              <button
+                className="disabled:opacity-70"
+                disabled={page == 1}
+                onClick={() => {
+                  setFieldValue("page", 1);
+                  router.replace(`?term=${term}&page=1`, { scroll: false });
+                }}
               >
-                Página
-                <input
-                  className="w-[60px] outline-none border rounded-lg pl-3 p-1"
-                  name="page"
-                  onChange={handleChange}
-                  value={values.page}
-                  type="number"
-                  min={1}
-                  max={lastPage}
-                />
-                de {lastPage || 1}
-              </form>
+                <ChevronDoubleLeftIcon className="size-5" />
+              </button>
+              <button
+                className="disabled:opacity-70"
+                disabled={page == 1}
+                onClick={() => {
+                  setFieldValue("page", page - 1);
+                  router.replace(`?term=${term}&page=${page - 1}`, {
+                    scroll: false,
+                  });
+                }}
+              >
+                <ChevronLeftIcon className="size-5" />
+              </button>
+              {lastPage == page && page - 2 > 0 && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page - 2);
+                      router.replace(`?term=${term}&page=${page - 2}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page - 2}
+                  </button>
+                </>
+              )}
+              {page > 1 && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page - 1);
+                      router.replace(`?term=${term}&page=${page - 1}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page - 1}
+                  </button>
+                </>
+              )}
+
+              <button className="flex justify-center items-center rounded-full bg-neutral-300 size-9 text-sm font-medium">
+                {page}
+              </button>
+              {lastPage - 1 >= page && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page + 1);
+                      router.replace(`?term=${term}&page=${page + 1}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page + 1}
+                  </button>
+                </>
+              )}
+              {page == 1 && page + 2 <= lastPage && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page + 2);
+                      router.replace(`?term=${term}&page=${page + 2}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page + 2}
+                  </button>
+                </>
+              )}
+              <button
+                className="disabled:opacity-70"
+                disabled={page == lastPage}
+                onClick={() => {
+                  setFieldValue("page", page + 1);
+                  router.replace(`?term=${term}&page=${page + 1}`, {
+                    scroll: false,
+                  });
+                }}
+              >
+                <ChevronRightIcon className="size-5" />
+              </button>
+              <button
+                className="disabled:opacity-70"
+                disabled={page == lastPage}
+                onClick={() => {
+                  setFieldValue("page", lastPage);
+                  router.replace(`?term=${term}&page=${lastPage}`);
+                }}
+              >
+                <ChevronDoubleRightIcon className="size-5" />
+              </button>
             </div>
+            <form
+              onSubmit={handleSubmit}
+              className="flex gap-1 items-center text-sm font-medium text-neutral-500"
+            >
+              Página
+              <input
+                className="w-[60px] outline-none border rounded-lg pl-3 p-1"
+                name="page"
+                onChange={handleChange}
+                value={values.page}
+                type="number"
+                min={1}
+                max={lastPage}
+              />
+              de {lastPage || 1}
+            </form>
           </div>
-        ) : (
-          <p>Ingresa el API key para empezar.</p>
-        )}
-      </div>
-    </Suspense>
+
+          <ul className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-3">
+            {result.data?.map((value) => (
+              <ImageCard value={value} key={value.id} />
+            ))}
+          </ul>
+
+          <div className="flex justify-between items-center py-3">
+            <div className="flex items-center gap-2 text-sm">
+              <div className="flex items-center gap-1">
+                <PhotoIcon className="size-4" />
+                <strong>Imágenes</strong>
+              </div>
+              {result.meta?.total}
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                className="disabled:opacity-70"
+                disabled={page == 1}
+                onClick={() => {
+                  setFieldValue("page", 1);
+                  router.replace(`?term=${term}&page=1`, { scroll: false });
+                }}
+              >
+                <ChevronDoubleLeftIcon className="size-5" />
+              </button>
+              <button
+                className="disabled:opacity-70"
+                disabled={page == 1}
+                onClick={() => {
+                  setFieldValue("page", page - 1);
+                  router.replace(`?term=${term}&page=${page - 1}`, {
+                    scroll: false,
+                  });
+                }}
+              >
+                <ChevronLeftIcon className="size-5" />
+              </button>
+              {lastPage == page && page - 2 > 0 && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page - 2);
+                      router.replace(`?term=${term}&page=${page - 2}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page - 2}
+                  </button>
+                </>
+              )}
+              {page > 1 && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page - 1);
+                      router.replace(`?term=${term}&page=${page - 1}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page - 1}
+                  </button>
+                </>
+              )}
+
+              <button className="flex justify-center items-center rounded-full bg-neutral-300 size-9 text-sm font-medium">
+                {page}
+              </button>
+              {lastPage - 1 >= page && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page + 1);
+                      router.replace(`?term=${term}&page=${page + 1}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page + 1}
+                  </button>
+                </>
+              )}
+              {page == 1 && page + 2 <= lastPage && (
+                <>
+                  <button
+                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
+                    onClick={() => {
+                      setFieldValue("page", page + 2);
+                      router.replace(`?term=${term}&page=${page + 2}`, {
+                        scroll: false,
+                      });
+                    }}
+                  >
+                    {page + 2}
+                  </button>
+                </>
+              )}
+              <button
+                className="disabled:opacity-70"
+                disabled={page == lastPage}
+                onClick={() => {
+                  setFieldValue("page", page + 1);
+                  router.replace(`?term=${term}&page=${page + 1}`, {
+                    scroll: false,
+                  });
+                }}
+              >
+                <ChevronRightIcon className="size-5" />
+              </button>
+              <button
+                className="disabled:opacity-70"
+                disabled={page == lastPage}
+                onClick={() => {
+                  setFieldValue("page", lastPage);
+                  router.replace(`?term=${term}&page=${lastPage}`);
+                }}
+              >
+                <ChevronDoubleRightIcon className="size-5" />
+              </button>
+            </div>
+            <form
+              onSubmit={handleSubmit}
+              className="flex gap-1 items-center text-sm font-medium text-neutral-500"
+            >
+              Página
+              <input
+                className="w-[60px] outline-none border rounded-lg pl-3 p-1"
+                name="page"
+                onChange={handleChange}
+                value={values.page}
+                type="number"
+                min={1}
+                max={lastPage}
+              />
+              de {lastPage || 1}
+            </form>
+          </div>
+        </div>
+      ) : (
+        <p>Ingresa el API key para empezar.</p>
+      )}
+    </div>
   );
 }

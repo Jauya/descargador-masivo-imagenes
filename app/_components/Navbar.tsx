@@ -6,7 +6,7 @@ import { ExclamationCircleIcon, FolderIcon } from "@heroicons/react/24/outline";
 import { usePathname } from "next/navigation";
 import { CodeBracketIcon } from "@heroicons/react/16/solid";
 import Modal from "./ui/Modal";
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useFormik } from "formik";
 import { validateKey } from "../actions";
 import { useApikeyStore } from "../_store/apikeyStore";
@@ -142,7 +142,11 @@ export default function Navbar() {
           </Link>
         </div>
       </div>
-      {pathname == "/" && <SearchForm />}
+      {pathname == "/" && (
+        <Suspense>
+          <SearchForm />
+        </Suspense>
+      )}
     </div>
   );
 }
