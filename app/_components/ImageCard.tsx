@@ -9,6 +9,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 import DownloadButton from "./DownloadButton";
+import { CheckBadgeIcon } from "@heroicons/react/16/solid";
+import clsx from "clsx";
 
 interface ImageCardProps {
   value: DataImage;
@@ -17,7 +19,7 @@ export default function ImageCard({ value }: ImageCardProps) {
   const { folders, addSelectedImage, deleteImage } = useFolderStore();
 
   return (
-    <li className="group rounded-lg border relative break-inside-avoid mb-3">
+    <li className="group rounded-lg border relative break-inside-avoid mb-3 ">
       <Image
         src={value.image.source.url}
         alt={value.title}
@@ -26,6 +28,15 @@ export default function ImageCard({ value }: ImageCardProps) {
         placeholder="empty"
         className="object-cover w-full rounded-lg"
       />
+      <div
+        className={clsx(
+          "absolute flex items-center text-xs bg-black/50 py-1 px-2 gap-1 rounded-md font-medium top-3 left-3 text-white",
+          value.licenses[0].type == "freemium" && "hidden"
+        )}
+      >
+        <CheckBadgeIcon className="size-4" />
+        Premium
+      </div>
       <div className="flex gap-2 p-2 justify-between items-end transition duration-300 group-hover:opacity-100 group-hover:pointer-events-auto pointer-events-none absolute top-0 rounded-lg w-full h-full bg-gradient-to-b to-black/50 from-black/0 opacity-0 text-white">
         <h3 className="w-full max-w-56 overflow-hidden overflow-ellipsis text-nowrap">
           {value.title}
