@@ -70,7 +70,7 @@ export default function ApiKeyForm() {
         isOpen={isModalOpen}
       >
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 w-full">
-          <div className="flex rounded-lg bg-neutral-100 w-full shadow-lg">
+          <div className="flex rounded-lg bg-neutral-100 w-full border">
             <input
               className="w-full bg-transparent outline-none px-4 py-2 my-2"
               type="password"

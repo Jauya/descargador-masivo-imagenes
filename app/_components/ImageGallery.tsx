@@ -55,20 +55,22 @@ export default function ImageGallery() {
   }, [apikey, setLastPage, searchParams, setLastQueryParams]);
 
   return (
-    <div className="py-2 px-5 flex justify-center w-full">
+    <div className="py-2 px-5 flex justify-center w-full ">
       <div
         className={clsx(
           "flex flex-col gap-2 w-full text-neutral-700 ",
           !apikey && "hidden"
         )}
       >
-        <div className="flex justify-between py-3">
+        <div className="flex justify-between items-center py-3 relative">
           <h2 className="text-xl ">
             Mostrando resultados&nbsp;
             {term && <strong className="text-black">{term}</strong>}
           </h2>
-          <div className="relative">
-            <FolderSelectionButton />
+          <div className="fixed right-6 z-40">
+            <div className="relative rounded-lg bg-white border">
+              <FolderSelectionButton />
+            </div>
           </div>
         </div>
         <Suspense>
