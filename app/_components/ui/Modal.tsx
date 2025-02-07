@@ -23,7 +23,7 @@ export default function Modal({
   return createPortal(
     <div
       className={clsx(
-        "absolute top-0 left-0 w-full h-screen bg-black/5 flex justify-center items-center p-5 ",
+        "fixed top-0 left-0 w-full h-screen bg-black/5 flex justify-center items-center p-5 overflow-hidden ",
         className
       )}
     >

@@ -50,14 +50,20 @@ export default function DownloadFolderButton({
           Tostify({
             text: dataDownload.message,
             duration: 1000,
-            className:
-              "right-5 top-16 z-50 fixed max-w-[500px] w-full bg-red-50 text-red-800 p-2 rounded-lg shadow-lg transition-all duration-300",
+            style: {
+              background: "#fef2f2",
+              color: "#991b1b",
+            },
           }).showToast();
-          if (!dataDownload.message?.includes("daily limit")) {
-            setDownloaded(i + 1);
-            continue;
+
+          if (
+            dataDownload.message?.includes("daily limit") ||
+            dataDownload.message?.includes("Unauthorized")
+          ) {
+            break;
           }
-          break;
+          setDownloaded(i + 1);
+          continue;
         }
       } catch (error) {
         console.error(`Error descargando el recurso ${idResource}:`, error);

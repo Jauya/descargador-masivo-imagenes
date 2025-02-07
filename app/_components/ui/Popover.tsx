@@ -4,14 +4,14 @@ import clsx from "clsx";
 import { ReactNode, useEffect, useRef, useState } from "react";
 interface PopoverProps {
   children: ReactNode;
-  icon: ReactNode;
+  buttonContent: ReactNode;
   className: string;
   buttonClassName: string;
 }
 
 const Popover = ({
   children,
-  icon,
+  buttonContent,
   buttonClassName,
   className,
 }: PopoverProps) => {
@@ -63,10 +63,10 @@ const Popover = ({
         onClick={togglePopover}
         className={clsx(
           buttonClassName,
-          isVisible ? " bg-neutral-200 rounded-t-lg" : ""
+          isVisible ? " bg-neutral-100 rounded-lg" : ""
         )}
       >
-        {icon}
+        {buttonContent}
       </button>
     </>
   );

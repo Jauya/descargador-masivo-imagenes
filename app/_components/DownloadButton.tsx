@@ -31,18 +31,20 @@ export default function DownloadButton({ idResource }: DownloadButtonProps) {
       Tostify({
         text: dataDownload.message,
         duration: 1000,
-        className:
-          "right-5 top-16 z-50 fixed max-w-[500px] w-full bg-red-50 text-red-800 p-2 rounded-lg shadow-lg transition-all duration-300",
+        style: {
+          background: "#fef2f2",
+          color: "#991b1b",
+        },
       }).showToast();
     }
   };
   return (
-      <button
-        onClick={handleSubmit}
-        className="p-2 bg-white border rounded-lg text-black disabled:bg-neutral-200 disabled:text-black/70"
-        disabled={!apikey}
-      >
-        <ArrowDownTrayIcon className="size-5 w-full " />
-      </button>
+    <button
+      onClick={handleSubmit}
+      className="p-2 bg-white border rounded-lg text-black disabled:bg-neutral-200 disabled:text-black/70"
+      disabled={!apikey}
+    >
+      <ArrowDownTrayIcon className="size-5 w-full " />
+    </button>
   );
 }

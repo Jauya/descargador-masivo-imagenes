@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
+import "toastify-js/src/toastify.css";
 import Navbar from "./_components/Navbar";
 
 const geist = Geist({

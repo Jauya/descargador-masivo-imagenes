@@ -1,12 +1,19 @@
 "use client";
 import { Suspense } from "react";
 import ImageGallery from "./_components/ImageGallery";
+import FilterSideBar from "./_components/FilterSidebar";
+
 export default function Home() {
   return (
-    <div className="flex gap-3 items-center px-5 py-3">
+    <div className="w-full flex">
       <Suspense>
-        <ImageGallery />
+        <FilterSideBar />
       </Suspense>
+      <div className="w-full flex border-l">
+        <Suspense>
+          <ImageGallery />
+        </Suspense>
+      </div>
     </div>
   );
 }

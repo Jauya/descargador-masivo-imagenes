@@ -1,41 +1,27 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useFreepikStore } from "../_store/freepikStore";
 import { FreepikResources } from "../types";
 import { getAllResources } from "../actions";
 import ImageCard from "./ImageCard";
 import { useApikeyStore } from "../_store/apikeyStore";
-import {
-  ChevronDoubleLeftIcon,
-  ChevronDoubleRightIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  PhotoIcon,
-} from "@heroicons/react/16/solid";
-import { useFormik } from "formik";
-import { useRouter, useSearchParams } from "next/navigation";
+
+import { useSearchParams } from "next/navigation";
+import ImagePagination from "./ImagePagination";
+import clsx from "clsx";
+import Toastify from "toastify-js";
+import FolderSelectionButton from "./FolderSelectionButton";
 
 export default function ImageGallery() {
-  const { term, setTerm, page, setPage, setLastPage, lastPage } =
-    useFreepikStore();
+  const { setLastPage, setLastQueryParams } = useFreepikStore();
   const { apikey } = useApikeyStore();
-  const [result, setFreepikResources] = useState<FreepikResources>({});
-  const router = useRouter();
-  const searchParams = useSearchParams();
-
-  // Obtener valores iniciales de los query params
-  const initialPage = Math.max(
-    parseInt(searchParams.get("page") || "1", 10),
-    1
+  const [freepikResources, setFreepikResources] = useState<FreepikResources>(
+    {}
   );
-  const initialTerm = searchParams.get("term") || "";
 
-  // Sincronizar estados con los query params
-  useEffect(() => {
-    if (term !== initialTerm) setTerm(initialTerm);
-    if (page !== initialPage) setPage(initialPage > 100 ? 100 : initialPage);
-  }, [initialTerm, initialPage, term, page, setTerm, setPage]);
+  const searchParams = useSearchParams();
+  const term = searchParams.get("term") ?? "";
 
   // Fetch de imágenes
   useEffect(() => {
@@ -44,321 +30,72 @@ export default function ImageGallery() {
         setFreepikResources({});
         return;
       }
-
-      const result = await getAllResources(term, apikey, page);
+      const queryParams = searchParams.toString();
+      console.log(queryParams);
+      setLastQueryParams(`/?${queryParams}`);
+      const result = await getAllResources(queryParams, apikey);
       if (result && !result.message) {
-        const lastPage =
-          (result.meta && result.meta.last_page >= 100
-            ? 100
-            : result.meta?.last_page) || 1;
-        setLastPage(lastPage);
+        const lastPage = result.meta?.last_page ?? 1;
+        const realLastPage = Math.min(lastPage, 100);
+        setLastPage(realLastPage);
         setFreepikResources(result);
+      } else {
+        Toastify({
+          text: result.message,
+          duration: 1000,
+          style: {
+            background: "#fef2f2",
+            color: "#991b1b",
+          },
+        }).showToast();
       }
     };
 
     fetchImages();
-  }, [apikey, term, page, setLastPage]);
-
-  // Formik para manejar la paginación
-  const { handleSubmit, handleChange, values, setFieldValue } = useFormik({
-    initialValues: { page: initialPage > 100 ? 100 : initialPage },
-    onSubmit: (values) => {
-      const newPage = Math.min(Math.max(values.page, 1), lastPage); // Asegurar límites
-      if (newPage !== page) {
-        router.replace(`?term=${term}&page=${newPage}`); // Evita añadir historial extra
-      }
-    },
-  });
+  }, [apikey, setLastPage, searchParams, setLastQueryParams]);
 
   return (
-    <div className="py-2 flex justify-center w-full">
-      {apikey ? (
-        <div className="flex flex-col gap-2 w-full text-neutral-700">
-          <h2 className="text-xl">
-            Mostrando resultados{" "}
+    <div className="py-2 px-5 flex justify-center w-full">
+      <div
+        className={clsx(
+          "flex flex-col gap-2 w-full text-neutral-700 ",
+          !apikey && "hidden"
+        )}
+      >
+        <div className="flex justify-between py-3">
+          <h2 className="text-xl ">
+            Mostrando resultados&nbsp;
             {term && <strong className="text-black">{term}</strong>}
           </h2>
-          <div className="flex justify-between items-center py-3">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1">
-                <PhotoIcon className="size-4" />
-                <strong>Imágenes</strong>
-              </div>
-              {result.meta?.total}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                className="disabled:opacity-70"
-                disabled={page == 1}
-                onClick={() => {
-                  setFieldValue("page", 1);
-                  router.replace(`?term=${term}&page=1`, { scroll: false });
-                }}
-              >
-                <ChevronDoubleLeftIcon className="size-5" />
-              </button>
-              <button
-                className="disabled:opacity-70"
-                disabled={page == 1}
-                onClick={() => {
-                  setFieldValue("page", page - 1);
-                  router.replace(`?term=${term}&page=${page - 1}`, {
-                    scroll: false,
-                  });
-                }}
-              >
-                <ChevronLeftIcon className="size-5" />
-              </button>
-              {lastPage == page && page - 2 > 0 && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page - 2);
-                      router.replace(`?term=${term}&page=${page - 2}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page - 2}
-                  </button>
-                </>
-              )}
-              {page > 1 && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page - 1);
-                      router.replace(`?term=${term}&page=${page - 1}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page - 1}
-                  </button>
-                </>
-              )}
-
-              <button className="flex justify-center items-center rounded-full bg-neutral-300 size-9 text-sm font-medium">
-                {page}
-              </button>
-              {lastPage - 1 >= page && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page + 1);
-                      router.replace(`?term=${term}&page=${page + 1}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page + 1}
-                  </button>
-                </>
-              )}
-              {page == 1 && page + 2 <= lastPage && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page + 2);
-                      router.replace(`?term=${term}&page=${page + 2}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page + 2}
-                  </button>
-                </>
-              )}
-              <button
-                className="disabled:opacity-70"
-                disabled={page == lastPage}
-                onClick={() => {
-                  setFieldValue("page", page + 1);
-                  router.replace(`?term=${term}&page=${page + 1}`, {
-                    scroll: false,
-                  });
-                }}
-              >
-                <ChevronRightIcon className="size-5" />
-              </button>
-              <button
-                className="disabled:opacity-70"
-                disabled={page == lastPage}
-                onClick={() => {
-                  setFieldValue("page", lastPage);
-                  router.replace(`?term=${term}&page=${lastPage}`);
-                }}
-              >
-                <ChevronDoubleRightIcon className="size-5" />
-              </button>
-            </div>
-            <form
-              onSubmit={handleSubmit}
-              className="flex gap-1 items-center text-sm font-medium text-neutral-500"
-            >
-              Página
-              <input
-                className="w-[60px] outline-none border rounded-lg pl-3 p-1"
-                name="page"
-                onChange={handleChange}
-                value={values.page}
-                type="number"
-                min={1}
-                max={lastPage}
-              />
-              de {lastPage || 1}
-            </form>
-          </div>
-
-          <ul className="columns-1 sm:columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-3">
-            {result.data?.map((value) => (
-              <ImageCard value={value} key={value.id} />
-            ))}
-          </ul>
-
-          <div className="flex justify-between items-center py-3">
-            <div className="flex items-center gap-2 text-sm">
-              <div className="flex items-center gap-1">
-                <PhotoIcon className="size-4" />
-                <strong>Imágenes</strong>
-              </div>
-              {result.meta?.total}
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                className="disabled:opacity-70"
-                disabled={page == 1}
-                onClick={() => {
-                  setFieldValue("page", 1);
-                  router.replace(`?term=${term}&page=1`, { scroll: false });
-                }}
-              >
-                <ChevronDoubleLeftIcon className="size-5" />
-              </button>
-              <button
-                className="disabled:opacity-70"
-                disabled={page == 1}
-                onClick={() => {
-                  setFieldValue("page", page - 1);
-                  router.replace(`?term=${term}&page=${page - 1}`, {
-                    scroll: false,
-                  });
-                }}
-              >
-                <ChevronLeftIcon className="size-5" />
-              </button>
-              {lastPage == page && page - 2 > 0 && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page - 2);
-                      router.replace(`?term=${term}&page=${page - 2}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page - 2}
-                  </button>
-                </>
-              )}
-              {page > 1 && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page - 1);
-                      router.replace(`?term=${term}&page=${page - 1}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page - 1}
-                  </button>
-                </>
-              )}
-
-              <button className="flex justify-center items-center rounded-full bg-neutral-300 size-9 text-sm font-medium">
-                {page}
-              </button>
-              {lastPage - 1 >= page && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page + 1);
-                      router.replace(`?term=${term}&page=${page + 1}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page + 1}
-                  </button>
-                </>
-              )}
-              {page == 1 && page + 2 <= lastPage && (
-                <>
-                  <button
-                    className="flex justify-center items-center rounded-full bg-neutral-100 size-9 text-sm font-medium hover:bg-neutral-200"
-                    onClick={() => {
-                      setFieldValue("page", page + 2);
-                      router.replace(`?term=${term}&page=${page + 2}`, {
-                        scroll: false,
-                      });
-                    }}
-                  >
-                    {page + 2}
-                  </button>
-                </>
-              )}
-              <button
-                className="disabled:opacity-70"
-                disabled={page == lastPage}
-                onClick={() => {
-                  setFieldValue("page", page + 1);
-                  router.replace(`?term=${term}&page=${page + 1}`, {
-                    scroll: false,
-                  });
-                }}
-              >
-                <ChevronRightIcon className="size-5" />
-              </button>
-              <button
-                className="disabled:opacity-70"
-                disabled={page == lastPage}
-                onClick={() => {
-                  setFieldValue("page", lastPage);
-                  router.replace(`?term=${term}&page=${lastPage}`);
-                }}
-              >
-                <ChevronDoubleRightIcon className="size-5" />
-              </button>
-            </div>
-            <form
-              onSubmit={handleSubmit}
-              className="flex gap-1 items-center text-sm font-medium text-neutral-500"
-            >
-              Página
-              <input
-                className="w-[60px] outline-none border rounded-lg pl-3 p-1"
-                name="page"
-                onChange={handleChange}
-                value={values.page}
-                type="number"
-                min={1}
-                max={lastPage}
-              />
-              de {lastPage || 1}
-            </form>
+          <div className="relative">
+            <FolderSelectionButton />
           </div>
         </div>
-      ) : (
-        <p>Ingresa el API key para empezar.</p>
-      )}
+        <Suspense>
+          <ImagePagination meta={freepikResources.meta} />
+        </Suspense>
+        {freepikResources.data?.length == 0 ? (
+          <div className="w-full h-full flex justify-center items-center">
+            No se encontraron resultados
+          </div>
+        ) : (
+          <>
+            {" "}
+            <ul className="columns-1 sm:columns-2 xl:columns-3 2xl:columns-4 gap-3">
+              {freepikResources.data?.map((value) => (
+                <ImageCard value={value} key={value.id} />
+              ))}
+            </ul>
+            <Suspense>
+              <ImagePagination meta={freepikResources.meta} />
+            </Suspense>
+          </>
+        )}
+      </div>
+
+      <p className={clsx(apikey && "hidden")}>
+        Ingresa el API key para empezar.
+      </p>
     </div>
   );
 }

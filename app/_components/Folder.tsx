@@ -39,7 +39,7 @@ export default function Folder({ value }: FolderProps) {
         <Popover
           className="-right-3 top-8 h-fit"
           buttonClassName="p-2 w-10 h-full rounded-l-none flex justify-center items-center"
-          icon={
+          buttonContent={
             <EllipsisVerticalIcon className="size-5 min-w-fit text-black" />
           }
         >

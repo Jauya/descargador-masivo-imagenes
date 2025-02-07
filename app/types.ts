@@ -1,7 +1,7 @@
 export interface FreepikResources {
   data?: DataImage[];
-  meta?: Meta2;
-  message?:string
+  meta?: Meta;
+  message?: string;
 }
 
 export interface DataImage {
@@ -11,7 +11,7 @@ export interface DataImage {
   filename: string;
   licenses: License[];
   products: Product[];
-  meta: Meta;
+  meta: Meta2;
   image: Image;
   stats: Stats;
   author: Author;
@@ -27,7 +27,7 @@ export interface Product {
   url: string;
 }
 
-export interface Meta {
+export interface Meta2 {
   published_at: string;
   is_new: boolean;
   available_formats: AvailableFormats;
@@ -73,7 +73,7 @@ export interface Author {
   slug: string;
 }
 
-export interface Meta2 {
+export interface Meta {
   current_page: number;
   last_page: number;
   per_page: number;
@@ -81,7 +81,7 @@ export interface Meta2 {
 }
 
 export interface FreepikDownload {
-  message?: string
+  message?: string;
   data?: DataDownload;
 }
 

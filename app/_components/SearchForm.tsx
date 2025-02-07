@@ -1,27 +1,25 @@
 "use client";
 import { useFormik } from "formik";
-import { useFreepikStore } from "../_store/freepikStore";
 import { MagnifyingGlassIcon, XMarkIcon } from "@heroicons/react/16/solid";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 
 export default function SearchForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("term") || "");
+  const router = useRouter();
 
-  const { term } = useFreepikStore();
+  const term = searchParams.get("term") ?? "";
 
-  useEffect(() => {
-    setSearchTerm(searchParams.get("term") || "");
-  }, [searchParams]); // Se ejecuta cada vez que cambia la URL
-
-  const { values, handleSubmit, handleChange, resetForm } = useFormik({
-    initialValues: { term: searchTerm },
-    enableReinitialize: true, // Permite que los valores iniciales cambien dinámicamente
+  const { values, handleSubmit, handleChange, setFieldValue } = useFormik({
+    initialValues: { term },
+    enableReinitialize: true,
     onSubmit: (values) => {
+      const params = new URLSearchParams(searchParams.toString());
       if (values.term.trim() !== term) {
-        router.replace(`?term=${values.term}&page=1`, { scroll: false });
+        params.set("term", values.term);
+        params.set("page", "1");
+      }
+      if (searchParams.toString() !== params.toString()) {
+        router.replace(`?${params.toString()}`, { scroll: false });
       }
     },
   });
@@ -29,7 +27,7 @@ export default function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="w-full flex items-center gap-4 p-2 rounded-lg bg-neutral-100 border"
+      className="w-full flex items-center gap-2 p-2 rounded-lg bg-neutral-100 border"
     >
       <MagnifyingGlassIcon className="size-5 min-w-fit my-2 text-neutral-700" />
       <input
@@ -41,8 +39,8 @@ export default function SearchForm() {
         onChange={handleChange}
       />
       {values.term && (
-        <button type="button" onClick={() => resetForm()}>
-          <XMarkIcon className="size-5 w-fit px-3 border-r border-r-neutral-400 text-neutral-700" />
+        <button type="button" onClick={() => setFieldValue("term", "")}>
+          <XMarkIcon className="size-5 w-fit px-3 mr-2 border-r border-r-neutral-400 text-neutral-700" />
         </button>
       )}
 
