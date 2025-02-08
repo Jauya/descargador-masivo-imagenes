@@ -18,9 +18,6 @@ export default function Folder({ value }: FolderProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  const resourceIds = value.selectedImages.length
-    ? value.selectedImages.map((item) => item.id)
-    : [];
   return (
     <>
       <div className="bg-neutral-100 rounded-lg w-full flex items-center justify-between relative cursor-pointer">
@@ -92,7 +89,7 @@ export default function Folder({ value }: FolderProps) {
             icon={<ArrowDownTrayIcon className="size-5" />}
             className="flex gap-2 px-5 py-2 rounded-lg bg-blue-600 disabled:opacity-70 saturate-150 text-blue-50 shadow-md"
             folderName={value.name}
-            resourceIds={resourceIds}
+            resources={value.selectedImages}
           />
         </div>
       </Modal>

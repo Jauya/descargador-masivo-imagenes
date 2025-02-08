@@ -4,16 +4,17 @@ import { useApikeyStore } from "../_store/apikeyStore";
 import { ReactNode, useState } from "react";
 import * as zip from "@zip.js/zip.js"; // Importa zip.js
 import Tostify from "toastify-js";
+import { DataImage } from "../types";
 
 interface DownloadFolderButtonProps {
-  resourceIds: number[];
+  resources: DataImage[];
   folderName: string;
   className: string;
   icon?: ReactNode;
 }
 
 export default function DownloadFolderButton({
-  resourceIds,
+  resources,
   folderName,
   className,
   icon,
@@ -27,12 +28,12 @@ export default function DownloadFolderButton({
     const writer = new zip.ZipWriter(new zip.BlobWriter("application/zip"));
     let downloadedCount = 0; // Variable local para rastrear el conteo real
 
-    for (let i = 0; i < resourceIds.length; i++) {
-      const idResource = resourceIds[i];
+    for (let i = 0; i < resources.length; i++) {
+      const idResource = resources[i].id;
       try {
-        const dataDownload = await downloadResource(idResource, apikey);
+        const dataDownload = await downloadResource(resources[i], apikey);
 
-        if (dataDownload.data?.url && dataDownload.data?.filename) {
+        if (dataDownload.data) {
           const blob = await getBlobImage(dataDownload.data.url);
           if (!blob) {
             console.error(`Error al descargar el recurso ${idResource}`);
@@ -91,10 +92,10 @@ export default function DownloadFolderButton({
     <button
       className={className}
       onClick={handleSubmit}
-      disabled={!resourceIds.length || !apikey}
+      disabled={!resources.length || !apikey}
     >
       {icon}
-      {messageButton} {downloaded == 0 ? "" : downloaded}
+      {messageButton}&nbsp;{downloaded == 0 ? "" : downloaded}
     </button>
   );
 }

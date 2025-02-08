@@ -55,7 +55,7 @@ export default function ImageCard({ value }: ImageCardProps) {
             </button>
           )}
 
-          <DownloadButton idResource={value.id} />
+          <DownloadButton resource={value} />
           <button
             className="p-2 bg-white border rounded-lg text-black disabled:bg-neutral-200 disabled:text-black/70"
             disabled={!folders.some((folder) => folder.selectedForSaving)}
